@@ -53,4 +53,48 @@ func PostGetList(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"posts": postList})
 }
 
-//https://youtu.be/lf_kiH_NPvM?t=1352
+func PostGet(ctx *gin.Context) {
+	//Get id of url
+	id := ctx.Param("id")
+
+	var post models.Post
+
+	initializers.DB.Find(&post, id)
+	// (else must be indented)
+	if post.Body == "" {
+		ctx.JSON(200, "")
+	} else {
+
+		ctx.JSON(200, gin.H{"post": post})
+	}
+}
+
+func PostUpdate(ctx *gin.Context) {
+	//updated data ref
+	var post models.Post
+
+	//Get id of url
+	id := ctx.Param("id")
+	//Get data from requet body
+	var updatedPost models.Post
+	ctx.Bind(&updatedPost)
+	initializers.DB.Find(&post, id)
+
+	// update
+	initializers.DB.Model(&post).Updates(models.Post{Body: updatedPost.Body, Title: updatedPost.Title})
+
+	//return
+	ctx.JSON(200, gin.H{"post": post})
+}
+
+func PostDelete(ctx *gin.Context) {
+	//Get id of url
+	id := ctx.Param("id")
+
+	//Delete Post
+	initializers.DB.Delete(&models.Post{}, id)
+	//return
+	ctx.JSON(200, gin.H{"message": "Deleted"})
+}
+
+//https://www.youtube.com/watch?v=lf_kiH_NPvM&t=1352s
